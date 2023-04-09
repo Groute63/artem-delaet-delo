@@ -19,12 +19,12 @@ export interface Event {
 }
 
 export const useEvents = () =>
-  useSWR<Omit<Event, "exercies">[]>("/events", fetcher);
+  useSWR<Omit<Event, "exercies">[]>("/events", fetcher, { refreshInterval: 0 });
 export const useEvent = (id: Event["id"] | null) =>
-  useSWR<Event>(id ? `/event/${id}` : null, fetcher);
+  useSWR<Event>(id ? `/event/${id}` : null, fetcher, { refreshInterval: 0 });
 
 export const createEvent = async (event: CreateEventFormData) => {
-  const { data } = await axios.post("/event", event);
+  const { data } = await axios.post("/events", event);
   await mutate<Event[]>("/events");
   await mutate<Event[]>(`/event/${data.id}`, data, false);
 };

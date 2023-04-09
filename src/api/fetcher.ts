@@ -1,37 +1,30 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
 import { CreateEventFormData } from "../modals/interact-event";
+import { serializeEvent } from "../utils";
 import { Event } from "./events";
 
-axios.defaults.baseURL = import.meta.env.API_URL;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
-const serializeEvent = (data: CreateEventFormData, id?: Event["id"]): Event => {
-  const { title, date, start, end, exercises } = data;
-
-  const startTime = start.split(":").map((v) => parseInt(v, 10));
-  const startTimeDate = dayjs(date)
-    .set("hours", startTime[0])
-    .set("minutes", startTime[1]);
-  const endTime = end.split(":").map((v) => parseInt(v, 10));
-  const endTimeDate = dayjs(date)
-    .set("hours", endTime[0])
-    .set("minutes", endTime[1]);
-
-  const event = {
-    id: id || nanoid(),
-    title,
-    start: startTimeDate.toISOString(),
-    end: endTimeDate.toISOString(),
-    exercises,
-  };
-
-  return event;
-};
+axios.interceptors.response.use(
+  (response) => {
+    if (import.meta.env.DEV) console.log(response.config.url, response.data);
+    return response;
+  },
+  (error) => {
+    if (error instanceof AxiosError) {
+      if (import.meta.env.DEV && error.config)
+        console.log(error.config.url, error.config.data);
+    }
+    console.error(error);
+    return Promise.reject(error);
+  }
+);
 
 const mock = new MockAdapter(axios);
+
 const events: Event[] = [
   {
     id: "0",
@@ -56,17 +49,7 @@ const events: Event[] = [
   },
 ];
 
-axios.interceptors.response.use(
-  (response) => {
-    if (import.meta.env.DEV) console.log(response.config.url, response.data);
-    return response;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-mock.onGet(/\/event\/\S+/).reply((config) => {
+mock.onGet(/\/event\/\S+/).reply(async (config) => {
   if (!config.url) return [500];
 
   const id = config.url.split("/")[2];
@@ -74,6 +57,14 @@ mock.onGet(/\/event\/\S+/).reply((config) => {
 
   const event = events.find((event) => event.id === id);
   if (!event) return [404];
+
+  const delay = () =>
+    new Promise<void>((res) => {
+      setTimeout(() => res(), 500);
+    });
+
+  await delay();
+
   return [200, event];
 });
 
@@ -98,6 +89,17 @@ mock.onPut(/\/event\/\S+/).reply((config) => {
   events[eventIndex] = newEvent;
 
   return [200, newEvent];
+});
+
+mock.onPost("/auth").reply(() => {
+  return [200, { token: nanoid() }];
+});
+mock.onPost("/register").reply(() => {
+  return [200, { token: nanoid() }];
+});
+
+mock.onGet("/profile/me").reply(() => {
+  return [200, { name: "User 1" }];
 });
 
 export const fetcher = async (url: string) => {

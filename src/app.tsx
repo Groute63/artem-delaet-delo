@@ -14,6 +14,7 @@ export const App = () => {
         <Routes>
           <Route index element={<MainScreen />} />
           <Route path="/auth" element={<AuthScreen />} />
+          <Route path="/auth/:mode" element={<AuthScreen />} />
         </Routes>
       </Box>
     </>
