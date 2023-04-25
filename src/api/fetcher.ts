@@ -11,9 +11,9 @@ axios.interceptors.response.use(
   },
   (error) => {
     if (error instanceof AxiosError) {
-      if (import.meta.env.DEV && error.config)
-        console.log(error.config.url, error.config.data);
+      if (import.meta.env.DEV && error.config) console.log("D");
     }
+    alert(error.request.responseText);
     console.error(error);
     return Promise.reject(error);
   }
