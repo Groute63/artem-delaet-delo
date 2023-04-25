@@ -18,5 +18,11 @@ export const useModalStore = create<ModalStore>((set) => ({
   openInteractEventModal: () => set({ isInteractEventModalVisible: true }),
   closeInteractEventModal: () => set({ isInteractEventModalVisible: false }),
   lastSelectedDate: null,
+  //todo
   setLastSelectedDate: (v) => set({ lastSelectedDate: v }),
+  /* setLastSelectedDate: (v) => {
+    const nextDay = new Date(v);
+    nextDay.setDate(nextDay.getDate() + 1);
+    set({ lastSelectedDate: nextDay });
+  },*/
 }));

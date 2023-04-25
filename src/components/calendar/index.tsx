@@ -158,6 +158,7 @@ export const Calendar = () => {
         </Stack>
         <FullCalendar
           initialDate={currentDate}
+          timeZone={undefined}
           datesSet={(info) => setCurrentDate(info.start)}
           ref={calendarRef}
           customButtons={{ user: { text: "Привет" } }}

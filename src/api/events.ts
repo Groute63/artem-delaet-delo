@@ -2,7 +2,8 @@ import axios from "axios";
 import useSWR, { mutate } from "swr";
 
 import { CreateEventFormData } from "../modals/interact-event";
-import { fetcher } from "./fetcher";
+import {fetcher} from "./fetcher";
+/*import { fetcher } from "./fetcher";*/
 
 export interface Exercise {
   title?: string;
@@ -18,21 +19,23 @@ export interface Event {
   exercises: Exercise[];
 }
 
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+
 export const useEvents = () =>
   useSWR<Omit<Event, "exercies">[]>("/events", fetcher, { refreshInterval: 0 });
 export const useEvent = (id: Event["id"] | null) =>
-  useSWR<Event>(id ? `/event/${id}` : null, fetcher, { refreshInterval: 0 });
+  useSWR<Event>(id ? `/events/${id}` : null, fetcher, { refreshInterval: 0 });
 
 export const createEvent = async (event: CreateEventFormData) => {
   const { data } = await axios.post("/events", event);
   await mutate<Event[]>("/events");
-  await mutate<Event[]>(`/event/${data.id}`, data, false);
+  await mutate<Event[]>(`/events/${data.id}`, data, false);
 };
 export const editEvent = async (
   id: Event["id"],
   event: CreateEventFormData
 ) => {
-  const { data } = await axios.put(`/event/${id}`, event);
+  const { data } = await axios.put(`/events/${id}`, event);
   await mutate<Event[]>("/events");
   await mutate<Event[]>(`/event/${data.id}`, data, false);
 };

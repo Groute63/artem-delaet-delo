@@ -1,12 +1,8 @@
 import axios, { AxiosError } from "axios";
-import MockAdapter from "axios-mock-adapter";
-import { nanoid } from "nanoid";
 
-import { CreateEventFormData } from "../modals/interact-event";
-import { serializeEvent } from "../utils";
-import { Event } from "./events";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 axios.interceptors.response.use(
   (response) => {
@@ -23,7 +19,27 @@ axios.interceptors.response.use(
   }
 );
 
-const mock = new MockAdapter(axios);
+/*axios.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    if (error.response.status === 403) {
+      const login = useAppStore((state) => state.login);
+      const password = useAppStore((state) => state.password);
+      console.log("Ошибка 403: Доступ запрещен");
+      const { data } = await axios.post<{ token: string }>("/login", {
+        login,
+        password,
+      });
+      useAppStore.getState().setToken(data.token);
+      axios.defaults.headers.authorization = data.token;
+    }
+    return Promise.reject(error);
+  }
+);*/
+
+/*const mock = new MockAdapter(axios);
 
 const events: Event[] = [
   {
@@ -47,9 +63,9 @@ const events: Event[] = [
     end: "2023-03-26T19:40:00",
     exercises: [],
   },
-];
+];*/
 
-mock.onGet(/\/event\/\S+/).reply(async (config) => {
+/*mock.onGet(/\/event\/\S+/).reply(async (config) => {
   if (!config.url) return [500];
 
   const id = config.url.split("/")[2];
@@ -66,16 +82,16 @@ mock.onGet(/\/event\/\S+/).reply(async (config) => {
   await delay();
 
   return [200, event];
-});
+});*/
 
-mock.onGet("/events").reply(200, events);
+/*mock.onGet("/events").reply(200, events);
 mock.onPost("/events").reply(({ data }) => {
   const eventData = JSON.parse(data) as CreateEventFormData;
   const event = serializeEvent(eventData);
   events.push(event);
   return [200, event];
-});
-mock.onPut(/\/event\/\S+/).reply((config) => {
+});*/
+/*mock.onPut(/\/event\/\S+/).reply((config) => {
   if (!config.url) return [500];
   const id = config.url.split("/")[2];
   if (typeof id !== "string") return [400];
@@ -89,9 +105,9 @@ mock.onPut(/\/event\/\S+/).reply((config) => {
   events[eventIndex] = newEvent;
 
   return [200, newEvent];
-});
+});*/
 
-mock.onPost("/auth").reply(() => {
+/*mock.onPost("/auth").reply(() => {
   return [200, { token: nanoid() }];
 });
 mock.onPost("/register").reply(() => {
@@ -100,7 +116,7 @@ mock.onPost("/register").reply(() => {
 
 mock.onGet("/profile/me").reply(() => {
   return [200, { name: "User 1" }];
-});
+});*/
 
 export const fetcher = async (url: string) => {
   const { data } = await axios.get(url);

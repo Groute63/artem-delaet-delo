@@ -1,4 +1,6 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 import { nanoid } from "nanoid";
 
 import { Event } from "./api/events";
@@ -11,11 +13,13 @@ export const serializeEvent = (
   const { title, date, start, end, exercises } = data;
 
   const startTime = start.split(":").map((v) => parseInt(v, 10));
-  const startTimeDate = dayjs(date)
+  const startTimeDate = dayjs
+    .utc(date)
     .set("hours", startTime[0])
     .set("minutes", startTime[1]);
   const endTime = end.split(":").map((v) => parseInt(v, 10));
-  const endTimeDate = dayjs(date)
+  const endTimeDate = dayjs
+    .utc(date)
     .set("hours", endTime[0])
     .set("minutes", endTime[1]);
 

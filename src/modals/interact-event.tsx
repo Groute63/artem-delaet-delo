@@ -9,6 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -71,7 +73,6 @@ export const InteractEventModal = () => {
     );
     const filteredData = { ...data, exercises: filteredExercises };
     const filteredDataWithDate = { ...filteredData, date: lastSelectedDate };
-
     if (interactEventModalId)
       await editEvent(interactEventModalId, filteredDataWithDate);
     else await createEvent(filteredDataWithDate);
@@ -80,9 +81,8 @@ export const InteractEventModal = () => {
 
   useEffect(() => {
     if (!event) return;
-
-    const startTime = dayjs(event.start);
-    const endTime = dayjs(event.end);
+    const startTime = dayjs.utc(event.start);
+    const endTime = dayjs.utc(event.end);
 
     setValue("start", startTime.format("HH:mm"));
     setValue("end", endTime.format("HH:mm"));
@@ -96,6 +96,7 @@ export const InteractEventModal = () => {
   return (
     <Modal open={isInteractEventModalVisible} onClose={onClose}>
       <Box
+        style={{ overflowY: "scroll", maxHeight: 700 }}
         onSubmit={handleSubmit(onSubmit)}
         component="form"
         width={600}
