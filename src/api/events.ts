@@ -39,3 +39,9 @@ export const editEvent = async (
   await mutate<Event[]>("/events");
   await mutate<Event[]>(`/event/${data.id}`, data, false);
 };
+
+export const deleteEvent = async (id: Event["id"]) => {
+  const { data } = await axios.delete(`/events/${id}`);
+  await mutate<Event[]>("/events");
+  await mutate<Event[]>(`/event/${data.id}`, data, false);
+};

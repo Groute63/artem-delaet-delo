@@ -67,7 +67,9 @@ export const Calendar = () => {
   return (
     <>
       <Popper
+        style={{ pointerEvents: "none" }}
         transition
+        disablePortal
         open={currentEventElement !== null}
         anchorEl={currentEventElement}
         popperOptions={{

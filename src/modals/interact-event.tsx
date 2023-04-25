@@ -11,10 +11,16 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { createEvent, editEvent, Exercise, useEvent } from "../api/events";
+import {
+  createEvent,
+  deleteEvent,
+  editEvent,
+  Exercise,
+  useEvent,
+} from "../api/events";
 import { useModalStore } from "../store/modals";
 
 interface CreateEventForm {
@@ -93,6 +99,11 @@ export const InteractEventModal = () => {
     }
   }, [event]);
 
+  async function onDelete(id: string) {
+    await deleteEvent(id);
+    onClose();
+  }
+
   return (
     <Modal open={isInteractEventModalVisible} onClose={onClose}>
       <Box
@@ -167,7 +178,7 @@ export const InteractEventModal = () => {
                   valueAsNumber: true,
                 })}
                 type="number"
-                label="Кол-во сетов"
+                label="сеты"
                 fullWidth
                 sx={{ flex: 1 }}
               />
@@ -176,7 +187,7 @@ export const InteractEventModal = () => {
                   valueAsNumber: true,
                 })}
                 type="number"
-                label="Кол-во повторов"
+                label="повторы"
                 fullWidth
                 sx={{ flex: 1 }}
               />
@@ -194,6 +205,11 @@ export const InteractEventModal = () => {
               )}
             </Stack>
           ))}
+          {interactEventModalId ? (
+            <Button onClick={() => onDelete(event!.id)}>Удалить</Button>
+          ) : (
+            ""
+          )}
           <Button type="submit">Готово</Button>
         </Stack>
       </Box>
